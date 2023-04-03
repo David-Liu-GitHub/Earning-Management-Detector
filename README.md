@@ -39,7 +39,7 @@ The function will return a dataframe with 9 columns where each column represents
 
 Here is the function’s sample output tested using Google and a evaluation period of 2012 to 2021:
 
- 
+ ![](Image/Picture1.png)
 
 #### The Restatement Data and The Combined Dataset
 
@@ -69,15 +69,17 @@ column 91-100 (at): Asset Turnover
 
 What the final dataset looks like:
 
-  
+![](Image/Picture2.png)
+
 ### Correlation Analysis Between Earning Qualities and Financial Restatements
 
 Now we have all our data conveniently in one single dataset, first let's take a look at the relationship between UAA scores and restatements. Do restated periods have higher UAA scores (Lower earning quality)? We will be performing our tests using the UAA score calculated with Dechow and Dichev Model.
 
 The first thing we need to do is to flatten our dataset, so all years' data are combined into the same column. After flattening, there will be 2 columns, the first one indicates if a company restated its financial statements or not, if yes, what type of restatement. The second column indicates the company's UAA score of that year. 
+
 What the flattened dataset looks like:
 
-  
+![](Image/Picture3.png)
 
 In order to test the relationship between EQ scores and both regular restatements and SEC investigated restatements, we need to create 2 different binary dataframes:
 
@@ -88,7 +90,7 @@ Some visualization of the UAA scores by restatement status
 
 Since the dataset is not balanced, the visualisation is not very useful, especially for the SEC investigated restatements as the number is very small comparing to the number of observations with no restatement.
 
-   
+![](Image/Picture4.png)![](Image/Picture5.png)
 
 #### The Hypothesis Tests
 

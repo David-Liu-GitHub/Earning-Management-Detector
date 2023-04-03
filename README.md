@@ -137,10 +137,11 @@ We first need to make sec_2018 our target variable and change it to binary forma
 
 A quick look of our training dataset
 
- 
+![](Image/Picture6.png)
 
 Correlation Matrix
 
+![](Image/Picture7.png)
  
 Now let's try a few prediction models to see the performance. 
 
@@ -161,7 +162,7 @@ SVM: Radial Basis Function kernel function, regularization parameter of 10 and a
 
 Here is the testing performance:
 
- 
+![](Image/Picture8.png)
 
 As we can see from the graph, the SVM classifier clearly outperforms the other classification models, using the Radial Basis Function kernel function, regularization parameter of 10 and a scale gamma.
 
@@ -170,12 +171,12 @@ As we can see from the graph, the SVM classifier clearly outperforms the other c
 Since we cannot assume the linear relationships between our predictors and target variable, using lasso regression to perform feature reduction may be biased. Thus, we will use decision tree and entropy to evaluate what are the most important predictors.
 
 Here is the unpruned decision tree
- 
+
+![](Image/Picture9.png)
 
 Based on this tree, we evaluated the entropy, or the information gain, and ranked the most important features:
 
- 
-
+![](Image/Picture10.png)
 
 As expected, the most important indicator of the current year's reporting quality is the restatement status of the previous year, since restatements usually happen in a consecutive year. However, this feature might not be as useful as it looks, because when we are evaluating the earnings quality of a particular year, the previous year's statement might not have been restated yet, even if it has potential problems.
 
@@ -195,25 +196,21 @@ Since we are using the support vector machine model that we tuned earlier, the t
 
 Here are the prediction results of the top 100 most risky companies of 2019, 2020 and 2021
 
-2019:	     2020:
+2019:
 
-   
+![](Image/Picture11.png)
 
-2019 prediction accuracy:  0.9232142857142858        	       2020 prediction accuracy:  0.9361607142857142
+2019 prediction accuracy:  0.9232142857142858  
 
+2020:
 
+![](Image/Picture12.png)
 
-
-
-
-
-
-
-
+2020 prediction accuracy:  0.9361607142857142
 
 2021:
 
-  
+![](Image/Picture13.png)
 
 2021 prediction accuracy:  0.9535714285714286
 
@@ -238,7 +235,7 @@ The following steps were taken:
 
 Here is the out dataframe:
 
- 
+![](Image/Picture14.png)
 
 #### Hypothesis Test Using the Newly Created EQ_index
 
@@ -265,7 +262,7 @@ Let us wrap up our model and research by producing a list of 5 companies of whic
 We will first try to narrow down our list to 10 companies by re-ordering our 100 company list using the newly created EM index, and then using qualitative approaches to manually select 5 companies among the 10 as our final pick.
 Since our EM index was calculated as a combined score using the deciles obtained from the 3 UAA models, companies may have same EM index scores when they are similar and were placed in the same decile groups, making it impossible to order them further. To solve this problem, a combined_UAA_score variable is calculated using the 3 UAA scores directly. After re-sorting the companies in the 100 companies list using this score, we came up with the following 10 companies:
 
- 
+![](Image/Picture15.png)
 
 Now, in order to narrow them down further, we will adopt some qualitative approach:
 

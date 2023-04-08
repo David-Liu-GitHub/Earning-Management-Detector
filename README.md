@@ -99,8 +99,8 @@ Since the dataset is not balanced, the visualisation is not very useful, especia
 Null Hypothesis: UAA scores of restated years are not higher than those of non-restated years
 Alternative Hypothesis: UAA scores of restated years are higher than those of non-restated years
 
-t-statistic: 1.9572981033152068
-p-value: 0.02516507390486477
+t-statistic: 1.9648344047367838
+p-value: 0.02472551542882908
 
 A p value of 2.5% indicates strong evidence that the UAA scores of the restated companies tend to be higher.
 
@@ -109,8 +109,8 @@ A p value of 2.5% indicates strong evidence that the UAA scores of the restated 
 Null Hypothesis: UAA scores of SEC investigated restated years are not higher than those of non-restated years and non SEC investigated restated years
 Alternative Hypothesis: UAA scores of SEC investigated restated years are higher than those of non-restated years and non SEC investigated restated years
 
-t-statistic: -0.6843749707848551
-p-value: 0.7531257336047765
+t-statistic: -0.6822749389731764
+p-value: 0.752462404076568
 
 We got a negative t stat as well as a P value of 0.75, which indicated that there is no evidence that those who restated their financial statements due to SEC investigations tend to have a higher UAA score (lower EQ). This inconsistency with the previous test where all restatements were used may be due to several reasons such as the extremely imbalanced dataset and a very small number for the SEQ investigated restatements.
 
@@ -155,9 +155,9 @@ All models were fine tuned using grid search and cross validation to find the be
 
 Here are the fine tuned hyper-parameters by model:
 
-KNN: k: 17
+KNN: k: 18
 CART: max_depth: 1, min_samples_split: 2
-Random Forest: max_depth: None, min_samples_leaf: 2, min_samples_split: 5, n_estimators: 50
+Random Forest: max_depth: 20, min_samples_leaf: 2, min_samples_split: 10, n_estimators: 10
 SVM: Radial Basis Function kernel function, regularization parameter of 10 and a scale gamma
 
 Here is the testing performance:
@@ -186,7 +186,7 @@ Although, on one hand, it is true that including this variable may lead to certa
 
 On the other hand, if we exclude this variable, and when we do have the information on the previous year’s restatement status when evaluating the current year's financial quality, our model will not be able to capture that information, and our model will have a major omitting variable bias.
 
-The second important feature is the UAA score of 2015, followed by the earnings yield of 2012. Overall, most of these factors contribute to our predictive model, and should not be removed.
+The second important feature is the modified jones based UAA score of 2015, followed by 3 teoh based UAA scores. Overall, most of these factors contribute to our predictive model, and should not be removed.
 
 ### Model Testing: Predicting 100 Companies with Highest Risks
 

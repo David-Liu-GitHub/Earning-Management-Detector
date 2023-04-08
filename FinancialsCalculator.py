@@ -16,7 +16,7 @@ class FinancialsCalculator:
 
         # Query the data from Compustat
         query = f"""
-        SELECT fyear, ni, oancf, revt, rect, at, ppegt, act, lct, lt, ebit, csho, epspx
+        SELECT fyear, ni, oancf, revt, rect, at, ppegt, act, lct, lt, ebit, epspx, dp
         FROM compa.funda
         WHERE tic = '{tic}'
         AND indfmt = 'INDL'
@@ -56,12 +56,11 @@ class FinancialsCalculator:
         financial_data['ppe_scaled'] = financial_data['ppegt'] / financial_data['lagged_assets']
 
         # Teoh et al. model variables
-        financial_data['delta_total_liabilities'] = financial_data['lt'].diff()
-        financial_data['delta_cash'] = financial_data['act'].diff()
-        financial_data['scaled_delta_cash'] = financial_data['delta_cash'] / financial_data['lagged_assets']
-        financial_data['scaled_delta_liabilities'] = financial_data['delta_total_liabilities'] / financial_data['lagged_assets']
+        financial_data['tca'] = financial_data['ta'] + financial_data['dp']  # Add depreciation to total accruals to get total current accruals
 
-        # Dechow and Dichev Model variables
+        # Dechow and Dichev Model variables - This is a modified Dechow and Dichev Model. The CFO based Dechow and
+        # Dichev Model require the use of CFO t+1 which is not available at year t, so it cannot be used to
+        # evaluate the current year's financial statement risk.
         financial_data['chg_wc'] = (financial_data['act'] - financial_data['lct']) - (
                     financial_data['act'].shift(1) - financial_data['lct'].shift(1))
         financial_data['scaled_chg_wc'] = financial_data['chg_wc'] / financial_data['lagged_assets']
@@ -82,8 +81,8 @@ class FinancialsCalculator:
         financial_data['uaa_mj'] = results.resid.abs()
 
         # Estimate the Teoh et al. Model
-        y_teoh = financial_data['ta'] / financial_data['lagged_assets']
-        X_teoh = financial_data[['inv_lagged_assets', 'scaled_delta_rev', 'ppe_scaled', 'scaled_delta_cash', 'scaled_delta_liabilities']]
+        y_teoh = financial_data['tca'] / financial_data['lagged_assets']
+        X_teoh = financial_data[['inv_lagged_assets', 'scaled_delta_rev']]
         X_teoh = sm.add_constant(X_teoh)
 
         model_teoh = sm.OLS(y_teoh, X_teoh)
@@ -163,8 +162,8 @@ class FinancialsCalculator:
 
 
 
-
-#Reserved for testing
+'''
+# Reserved for testing
 import statsmodels.api as sm
 import warnings
 import wrds
@@ -176,13 +175,12 @@ db = wrds.Connection(wrds_username='david402')
 startYear = 2012
 endYear = 2021
 tic = 'GOOGL'
-# IVXLF
 
 startYear = startYear - 1  # Since we are calculating changes, we need the previous year's data as well
 
 # Query the data from Compustat
 query = f"""
-SELECT fyear, ni, oancf, revt, rect, at, ppegt, act, lct, lt, ebit, csho, epspx
+SELECT fyear, ni, oancf, revt, rect, at, ppegt, act, lct, lt, ebit, epspx, dp
 FROM compa.funda
 WHERE tic = '{tic}'
 AND indfmt = 'INDL'
@@ -219,10 +217,7 @@ financial_data['scaled_delta_rev'] = (financial_data['delta_rev'] - financial_da
 financial_data['ppe_scaled'] = financial_data['ppegt'] / financial_data['lagged_assets']
 
 # Teoh et al. model variables
-financial_data['delta_total_liabilities'] = financial_data['lt'].diff()
-financial_data['delta_cash'] = financial_data['act'].diff()
-financial_data['scaled_delta_cash'] = financial_data['delta_cash'] / financial_data['lagged_assets']
-financial_data['scaled_delta_liabilities'] = financial_data['delta_total_liabilities'] / financial_data['lagged_assets']
+financial_data['tca'] = financial_data['ta'] + financial_data['dp']  # Add depreciation to total accruals to get total current accruals
 
 # Dechow and Dichev Model variables
 financial_data['chg_wc'] = (financial_data['act'] - financial_data['lct']) - (financial_data['act'].shift(1) - financial_data['lct'].shift(1))
@@ -244,8 +239,8 @@ results = model.fit()
 financial_data['uaa_mj'] = results.resid.abs()
 
 # Estimate the Teoh et al. Model
-y_teoh = financial_data['ta'] / financial_data['lagged_assets']
-X_teoh = financial_data[['inv_lagged_assets', 'scaled_delta_rev', 'ppe_scaled', 'scaled_delta_cash', 'scaled_delta_liabilities']]
+y_teoh = financial_data['tca'] / financial_data['lagged_assets']
+X_teoh = financial_data[['inv_lagged_assets', 'scaled_delta_rev']]
 X_teoh = sm.add_constant(X_teoh)
 
 model_teoh = sm.OLS(y_teoh, X_teoh)
@@ -310,9 +305,7 @@ financial_data = financial_data.merge(stock_price_data[['fyear', 'prccm', 'pct_c
 
 # Calculate earnings yield
 financial_data['earnings_yield'] = financial_data['epspx'] / financial_data['prccm']
-
-
-
+'''
 
 
 

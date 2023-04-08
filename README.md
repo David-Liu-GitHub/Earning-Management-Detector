@@ -99,8 +99,8 @@ Since the dataset is not balanced, the visualisation is not very useful, especia
 Null Hypothesis: UAA scores of restated years are not higher than those of non-restated years
 Alternative Hypothesis: UAA scores of restated years are higher than those of non-restated years
 
-t-statistic: 1.9572981033152068
-p-value: 0.02516507390486477
+t-statistic: 1.9648344047367838
+p-value: 0.02472551542882908
 
 A p value of 2.5% indicates strong evidence that the UAA scores of the restated companies tend to be higher.
 
@@ -109,8 +109,8 @@ A p value of 2.5% indicates strong evidence that the UAA scores of the restated 
 Null Hypothesis: UAA scores of SEC investigated restated years are not higher than those of non-restated years and non SEC investigated restated years
 Alternative Hypothesis: UAA scores of SEC investigated restated years are higher than those of non-restated years and non SEC investigated restated years
 
-t-statistic: -0.6843749707848551
-p-value: 0.7531257336047765
+t-statistic: -0.6822749389731764
+p-value: 0.752462404076568
 
 We got a negative t stat as well as a P value of 0.75, which indicated that there is no evidence that those who restated their financial statements due to SEC investigations tend to have a higher UAA score (lower EQ). This inconsistency with the previous test where all restatements were used may be due to several reasons such as the extremely imbalanced dataset and a very small number for the SEQ investigated restatements.
 
@@ -155,9 +155,9 @@ All models were fine tuned using grid search and cross validation to find the be
 
 Here are the fine tuned hyper-parameters by model:
 
-KNN: k: 17
+KNN: k: 18
 CART: max_depth: 1, min_samples_split: 2
-Random Forest: max_depth: None, min_samples_leaf: 2, min_samples_split: 5, n_estimators: 50
+Random Forest: max_depth: 20, min_samples_leaf: 2, min_samples_split: 10, n_estimators: 10
 SVM: Radial Basis Function kernel function, regularization parameter of 10 and a scale gamma
 
 Here is the testing performance:
@@ -186,7 +186,7 @@ Although, on one hand, it is true that including this variable may lead to certa
 
 On the other hand, if we exclude this variable, and when we do have the information on the previous year’s restatement status when evaluating the current year's financial quality, our model will not be able to capture that information, and our model will have a major omitting variable bias.
 
-The second important feature is the UAA score of 2015, followed by the earnings yield of 2012. Overall, most of these factors contribute to our predictive model, and should not be removed.
+The second important feature is the modified jones based UAA score of 2015, followed by 3 teoh based UAA scores. Overall, most of these factors contribute to our predictive model, and should not be removed.
 
 ### Model Testing: Predicting 100 Companies with Highest Risks
 
@@ -226,7 +226,7 @@ As we can see, although the precision is not as good as the total model accuracy
 
 ### Improve Model Performance Through Data Segregation Using EM Index
 
-Let's see if we can make a better prediction using EQ scores and decile segmentation on top of our ML prediction models. We will be testing it using the 2019 data and compare it with the result we got from the pure SVM model.
+Let's see if we can make a better prediction using EQ scores and decile segmentation on top of our ML prediction models. We will be testing it using the 2021 data and compare it with the result we got from the pure SVM model.
 
 The following steps were taken:
 
@@ -243,26 +243,41 @@ Now let's redo the hypothesis test, but this time with the newly created EQ_inde
 
 All restatement hypothesis test result:
 
-t-statistic: 3.57441942547095
-p-value: 0.00017921756377669483
+t-statistic: 3.3753932122763226
+p-value: 0.0003748399335032735
 
 We saw a big improvement in the test's p value which decreased from the previous 2.5% to 0.02%. This shows that the EQ index is a much stronger indicator than the single UAA score for whether if the company's statement will be restated or not.
 
 SEC investigated restatement hypothesis test result:
 
-t-statistic: 1.6204708089893278
-p-value: 0.05263602929880965
+t-statistic: 1.6762619681446373
+p-value: 0.04691324970388801
 
 The p value was improved from the previous inconclusive 0.75 to 0.05, which again, proves that the EQ index is indeed a better indicator than one single UAA score. This also allows us to reject the null hypotheses with a confidence level of nearly 95% and proves that companies that restated due to SEC investigations do have, on average, a worse earning quality.
 
 ### Identify 5 Highest Risk Firms Using the New EM Index
 
-Let us wrap up our model and research by producing a list of 5 companies of which the financial statements are most likely to be restated due to potential earnings management in the year of 2019. 
+Let us include this new index into our prediction model and see if we can improve our prediction results. The first thing we need to do is to calculate the EM index score for each year.
 
-We will first try to narrow down our list to 10 companies by re-ordering our 100 company list using the newly created EM index, and then using qualitative approaches to manually select 5 companies among the 10 as our final pick.
-Since our EM index was calculated as a combined score using the deciles obtained from the 3 UAA models, companies may have same EM index scores when they are similar and were placed in the same decile groups, making it impossible to order them further. To solve this problem, a combined_UAA_score variable is calculated using the 3 UAA scores directly. After re-sorting the companies in the 100 companies list using this score, we came up with the following 10 companies:
+Note: Now we have 110 columns (10 more EM index scores)
 
 ![](Image/Picture15.png)
+
+Let us re-train our SVM model. This time, we will be training our model using data from 2012 to 2020.
+
+Since our model's input is 7 years rolling window, we first need to prepare our training dataset by stacking 7 years of rolling window data on top of each other, so our columns become t-6, t-5, t-4, t-3, t-2, t-1 and t, instead of specific years. We will be using year 2012 to 2018 as the first rolling window, 13 to 19 as the second rolling window and 14 to 20 as the third rolling window. After stacking the 3 rolling windows and renaming the columns, our training dataset looks something like this:
+
+![](Image/Picture16.png)
+
+Note that since each rolling window has 2241 rows, we now have 6723 rows after stacking them together.
+
+After training and testing our model using the 2021 data as test data, the model accuracy has been improved from the previous 95% to 97%. Great success!
+
+Now, let us wrap up our model and research by producing a list of 5 companies of which the financial statements are most likely to be restated due to potential earnings management in the year of 2021. We will first applying our new models to all companies in 2021 to narrow down our list to 10 companies with the highest risks.
+
+Here is the top 10 companies list produced by the model with the highest risk of restating their 2021 financial statements:
+
+![](Image/Picture17.png)
 
 Now, in order to narrow them down further, we will adopt some qualitative approach:
 
@@ -279,6 +294,6 @@ The third qualitative factor we want to look at is market cap. Comparing to larg
 5.	Incentive structures: Managers of micro-cap companies might be more likely to engage in earnings management if their compensation packages are tied to short-term performance metrics, such as earnings per share or stock price. These incentives could encourage managers to manipulate financial statements to achieve personal financial gains.
 After evaluating the ROE, auditor's opinion, and market cap of all 10 companies, the following 5 companies were selected:
 
-DALN GSAT PXLW TROO NMGX
+MMC WTW CMP WWE ESE
 
 All 5 companies have restated their 2019 financial statements later.
